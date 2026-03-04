@@ -1,0 +1,243 @@
+Generating project for testing
+Loading and constructing the graph
+It might take a while if the cache is empty
+Using cache binaries for the following targets: 
+Generating workspace CCGateWay.xcworkspace
+Generating project swift-distributed-tracing
+Generating project vapor
+Generating project multipart-kit
+Generating project swift-nio
+Generating project swift-service-context
+Generating project swift-nio-extras
+Generating project swift-numerics
+Generating project websocket-kit
+Generating project async-http-client
+Generating project swift-certificates
+Generating project swift-log
+Generating project swift-collections
+Generating project swift-crypto
+Generating project swift-nio-transport-services
+Generating project routing-kit
+Generating project async-kit
+Generating project console-kit
+Generating project swift-atomics
+Generating project swift-system
+Generating project swift-nio-ssl
+Generating project CCGateWay
+Generating project swift-algorithms
+Generating project swift-nio-http2
+Generating project swift-asn1
+Generating project swift-metrics
+Testing scheme CCGateWay
+note: Building targets in dependency order
+note: Target dependency graph (76 targets)
+[CVaporBcrypt] Processing CVaporBcrypt-Info.plist
+[_NumericsShims] Processing _NumericsShims-Info.plist
+[_AtomicsShims] Processing _AtomicsShims-Info.plist
+[ServiceContextModule] Processing ServiceContextModule-Info.plist
+[Logging] Processing Logging-Info.plist
+[InternalCollectionsUtilities] Processing InternalCollectionsUtilities-Info.plist
+[CSystem] Processing CSystem-Info.plist
+[CNIODarwin] Processing CNIODarwin-Info.plist
+[CNIOBoringSSL] Processing CNIOBoringSSL-Info.plist
+[CNIOAtomics] Processing CNIOAtomics-Info.plist
+Processing CCryptoBoringSSL-Info.plist
+[RealModule] Processing RealModule-Info.plist
+[Instrumentation] Processing Instrumentation-Info.plist
+[BitCollections] Processing BitCollections-Info.plist
+[CNIOLinux] Processing CNIOLinux-Info.plist
+[NIOConcurrencyHelpers] Processing NIOConcurrencyHelpers-Info.plist
+[Algorithms] Processing Algorithms-Info.plist
+[DequeModule] Processing DequeModule-Info.plist
+[CNIOOpenBSD] Processing CNIOOpenBSD-Info.plist
+[HashTreeCollections] Processing HashTreeCollections-Info.plist
+[CNIOWASI] Processing CNIOWASI-Info.plist
+[ConsoleKitCommands] Processing ConsoleKitCommands-Info.plist
+[CAsyncHTTPClient] Processing CAsyncHTTPClient-Info.plist
+[HeapModule] Processing HeapModule-Info.plist
+[CNIOWindows] Processing CNIOWindows-Info.plist
+[Atomics] Processing Atomics-Info.plist
+[OrderedCollections] Processing OrderedCollections-Info.plist
+[_NIOBase64] Processing _NIOBase64-Info.plist
+[_NIODataStructures] Processing _NIODataStructures-Info.plist
+[NIOCore] Processing NIOCore-Info.plist
+[NIOEmbedded] Processing NIOEmbedded-Info.plist
+[CNIOPosix] Processing CNIOPosix-Info.plist
+[NIOPosix] Processing NIOPosix-Info.plist
+[Crypto] Copy arm64-apple-macos.swiftsourceinfo -> Crypto.swiftsourceinfo
+[CryptoBoringWrapper] Compiling TuistBundle+CryptoBoringWrapper.swift
+[Crypto] Compiling TuistBundle+Crypto.swift
+[CryptoBoringWrapper] Copy arm64-apple-macos.swiftsourceinfo -> CryptoBoringWrapper.swiftsourceinfo
+[CryptoBoringWrapper] Copy arm64-apple-macos.abi.json -> CryptoBoringWrapper.abi.json
+[CCryptoBoringSSLShims] Processing CCryptoBoringSSLShims-Info.plist
+[NIOPosix] Copy arm64-apple-macos.swiftsourceinfo -> NIOPosix.swiftsourceinfo
+[NIOPosix] Compiling TuistBundle+NIOPosix.swift
+[NIOPosix] Copy arm64-apple-macos.abi.json -> NIOPosix.abi.json
+[Collections] Processing Collections-Info.plist
+[CNIOLLHTTP] Processing CNIOLLHTTP-Info.plist
+[CNIOExtrasZlib] Processing CNIOExtrasZlib-Info.plist
+[CNIOSHA1] Processing CNIOSHA1-Info.plist
+[CryptoExtras] Copy arm64-apple-macos.swiftsourceinfo -> CryptoExtras.swiftsourceinfo
+[CryptoExtras] Compiling TuistBundle+CryptoExtras.swift
+[CryptoExtras] Copy arm64-apple-macos.abi.json -> CryptoExtras.abi.json
+[Crypto] Processing Crypto-Info.plist
+[_CertificateInternals] Processing _CertificateInternals-Info.plist
+[NIO] Processing NIO-Info.plist
+[SwiftASN1] Processing SwiftASN1-Info.plist
+[CryptoBoringWrapper] Processing CryptoBoringWrapper-Info.plist
+[NIOHTTP1] Processing NIOHTTP1-Info.plist
+[CryptoExtras] Processing CryptoExtras-Info.plist
+[NIOHPACK] Processing NIOHPACK-Info.plist
+[NIOTLS] Processing NIOTLS-Info.plist
+[NIOHTTP2] Processing NIOHTTP2-Info.plist
+[NIOHTTPCompression] Processing NIOHTTPCompression-Info.plist
+[NIOSOCKS] Processing NIOSOCKS-Info.plist
+[CNIOBoringSSLShims] Processing CNIOBoringSSLShims-Info.plist
+[NIOSSL] Processing NIOSSL-Info.plist
+[_CryptoExtras] Processing _CryptoExtras-Info.plist
+[_NIOFileSystem] Copy arm64-apple-macos.swiftsourceinfo -> _NIOFileSystem.swiftsourceinfo
+[_NIOFileSystem] Compiling TuistBundle+_NIOFileSystem.swift
+[_NIOFileSystem] Copy arm64-apple-macos.abi.json -> _NIOFileSystem.abi.json
+[SystemPackage] Processing SystemPackage-Info.plist
+[_NIOFileSystem] Processing _NIOFileSystem-Info.plist
+[NIOSSL] Copy arm64-apple-macos.swiftsourceinfo -> NIOSSL.swiftsourceinfo
+[NIOSSL] Compiling TuistBundle+NIOSSL.swift
+[NIOSSL] Copy arm64-apple-macos.abi.json -> NIOSSL.abi.json
+[NIOExtras] Processing NIOExtras-Info.plist
+[NIOTransportServices] Processing NIOTransportServices-Info.plist
+[NIOWebSocket] Processing NIOWebSocket-Info.plist
+[Tracing] Processing Tracing-Info.plist
+[AsyncHTTPClient] Processing AsyncHTTPClient-Info.plist
+[AsyncKit] Processing AsyncKit-Info.plist
+[Metrics] Processing Metrics-Info.plist
+[MultipartKit] Processing MultipartKit-Info.plist
+[NIOFileSystem] Processing NIOFileSystem-Info.plist
+[RoutingKit] Processing RoutingKit-Info.plist
+[WebSocketKit] Processing WebSocketKit-Info.plist
+[X509] Processing X509-Info.plist
+[_NIOFileSystemFoundationCompat] Processing _NIOFileSystemFoundationCompat-Info.plist
+[Vapor] Processing Vapor-Info.plist
+[CCGateWay] Copy libXCTestBundleInject.dylib -> libXCTestBundleInject.dylib
+[CCGateWay] Copy XCUIAutomation.framework -> XCUIAutomation.framework
+[CCGateWay] Copy XCTestCore.framework -> XCTestCore.framework
+[CCGateWay] Copy libXCTestSwiftSupport.dylib -> libXCTestSwiftSupport.dylib
+[CCGateWay] Copy XCTestSupport.framework -> XCTestSupport.framework
+[CCGateWay] Copy XCTAutomationSupport.framework -> XCTAutomationSupport.framework
+[CCGateWay] Copy Testing.framework -> Testing.framework
+Signing libXCTestSwiftSupport.dylib (in target 'CCGateWay' from project 'CCGateWay')
+Signing libXCTestBundleInject.dylib (in target 'CCGateWay' from project 'CCGateWay')
+Signing XCUnit.framework (in target 'CCGateWay' from project 'CCGateWay')
+Signing XCTestSupport.framework (in target 'CCGateWay' from project 'CCGateWay')
+Signing XCUIAutomation.framework (in target 'CCGateWay' from project 'CCGateWay')
+Signing XCTestCore.framework (in target 'CCGateWay' from project 'CCGateWay')
+Signing XCTest.framework (in target 'CCGateWay' from project 'CCGateWay')
+Signing XCTAutomationSupport.framework (in target 'CCGateWay' from project 'CCGateWay')
+Signing Testing.framework (in target 'CCGateWay' from project 'CCGateWay')
+[CCGateWay] Compiling TuistAssets+CCGateWay.swift
+[CCGateWay] Compiling TuistBundle+CCGateWay.swift
+[CCGateWay] Copy arm64-apple-macos.abi.json -> CCGateWay.abi.json
+[CCGateWay] Copy arm64-apple-macos.swiftsourceinfo -> CCGateWay.swiftsourceinfo
+[CCGateWay] Processing CCGateWay-Info.plist
+[CCGateWay] Extract App Intents Metadata
+note: Metadata extraction skipped. No AppIntents.framework dependency found. (in target 'CCGateWay' from project 'CCGateWay')
+[CCGateWayTests] Processing CCGateWayTests-Info.plist
+[CCGateWayTests] Linking CCGateWayTests
+[CCGateWayTests] Extract App Intents Metadata
+note: Metadata extraction skipped. No AppIntents.framework dependency found. (in target 'CCGateWayTests' from project 'CCGateWay')
+Signing CCGateWayTests.xctest (in target 'CCGateWayTests' from project 'CCGateWay')
+Signing CCGateWay.debug.dylib (in target 'CCGateWay' from project 'CCGateWay')
+Signing __preview.dylib (in target 'CCGateWay' from project 'CCGateWay')
+Signing CCGateWay.app (in target 'CCGateWay' from project 'CCGateWay')
+[CCGateWay] Validate CCGateWay.app
+Test Suite 'All tests' started at 2026-03-04 23:11:41.363.
+Test Suite 'All tests' passed at 2026-03-04 23:11:41.364.
+Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test run started.
+Suite CCGateWayTests started
+    ✔ example() (0.001 seconds)
+Suite CCGateWayTests passed after 0.001 seconds
+Suite "Claude E2E Integration Tests" started
+    ✔ "Health check endpoint returns ok" (0.024 seconds)
+    ✔ "Raw Anthropic /v1/messages request returns valid response" (2.120 seconds)
+    ✔ "Claude CLI basic prompt returns text response" (0.411 seconds)
+    ✔ "Claude CLI JSON output has valid Anthropic structure" (0.166 seconds)
+    ✔ "Slot routing: different model names route to correct slots" (0.001 seconds)
+    ✔ "Streaming SSE request returns valid Anthropic event sequence" (0.181 seconds)
+Suite "Claude E2E Integration Tests" passed after 2.906 seconds
+Suite "DeepSeek Adapter" started
+    ✔ "Caps max_tokens at 8192" (0.001 seconds)
+    ✔ "Passes through max_tokens when within limit" (0.001 seconds)
+    ✔ "Returns DeepSeekChunkProcessor" (0.001 seconds)
+Suite "DeepSeek Adapter" passed after 0.001 seconds
+Suite "Gateway Test Service Tests" started
+    ✔ "Successful connection returns true" (0.002 seconds)
+    ✔ "401 Unauthorized returns apiError" (0.001 seconds)
+Suite "Gateway Test Service Tests" passed after 0.004 seconds
+Suite "Gemini Adapter Token Clamping" started
+    ✔ "Clamps max_tokens to model maxOutputTokens when exceeded" (0.001 seconds)
+    ✔ "Passes through max_tokens when within model limit" (0.001 seconds)
+    ✔ "Falls back to original value when model not in catalog" (0.001 seconds)
+Suite "Gemini Adapter Token Clamping" passed after 0.001 seconds
+Suite "Groq Adapter" started
+    ✔ "Strips cache_control from messages" (0.001 seconds)
+    [!]  Test "Strips $schema from tool parameters" recorded an issue at GroqAdapterTests.swift:69:13: Expectation failed: (params["$schema"] → "http://json-schema.org/draft-07/schema#") == nil
+    ✖ "Strips $schema from tool parameters" (0.001 seconds) 1 issue(s)
+    ✔ "Returns GroqChunkProcessor" (0.001 seconds)
+Suite "Groq Adapter" failed after 0.002 seconds with 1 issue(s)
+Suite "OpenAI Adapter Token Clamping & Reasoning Models" started
+    ✔ "Clamps max_tokens for standard models" (0.002 seconds)
+    ✔ "Renames max_tokens to max_completion_tokens for o3" (0.001 seconds)
+    ✔ "Renames max_tokens to max_completion_tokens for o4-mini" (0.001 seconds)
+    ✔ "Clamps AND renames for reasoning model when over limit" (0.001 seconds)
+    ✔ "Passes through max_tokens when within model limit for standard model" (0.001 seconds)
+    ✔ "Falls back to original value when model not in catalog" (0.001 seconds)
+Suite "OpenAI Adapter Token Clamping & Reasoning Models" passed after 0.007 seconds
+Suite "OpenAI Adapter Tests" started
+    [!]  Test "Transform basic Anthropic request to OpenAI format" recorded an issue at OpenAIAdapterTests.swift:46:9: Expectation failed: (body["max_tokens"] as? Int → nil) == 100
+    ✖ "Transform basic Anthropic request to OpenAI format" (0.001 seconds) 1 issue(s)
+    ✔ "Transform request with system prompt" (0.001 seconds)
+    ✔ "Transform request with system prompt as array" (0.001 seconds)
+    ✔ "Transform request with tools" (0.001 seconds)
+    ✔ "Transform request with tool_result in user message" (0.001 seconds)
+    ✔ "Transform streaming request sets stream: true" (0.001 seconds)
+    ✔ "Transform basic OpenAI response to Anthropic format" (0.001 seconds)
+    ✔ "Transform OpenAI response with tool_calls to Anthropic format" (0.001 seconds)
+    ✔ "Transform OpenAI error response throws appropriate error" (0.001 seconds)
+    ✔ "OpenAISSEBuilder emits message_start on first chunk" (0.003 seconds)
+    ✔ "OpenAISSEBuilder emits text_delta for content chunks" (0.001 seconds)
+    ✔ "OpenAISSEBuilder emits tool_use for tool_calls" (0.001 seconds)
+    ✔ "OpenAISSEBuilder emits message_stop on finish_reason stop" (0.001 seconds)
+    ✔ "OpenAISSEBuilder tracks token usage from stream usage chunk" (0.001 seconds)
+    ✔ "OpenAISSEBuilder finalize emits closing events when no finish_reason received" (0.001 seconds)
+Suite "OpenAI Adapter Tests" failed after 0.010 seconds with 1 issue(s)
+Suite "OpenRouter Adapter" started
+    ✔ "Strips cache_control for non-Claude models" (0.001 seconds)
+    ✔ "Keeps cache_control for Claude models via OpenRouter" (0.001 seconds)
+    ✔ "Returns OpenRouterChunkProcessor" (0.001 seconds)
+Suite "OpenRouter Adapter" passed after 0.001 seconds
+Suite "RequestCleaner" started
+    ✔ "Strips cache_control from message content arrays" (0.001 seconds)
+    ✔ "Strips cache_control from top-level message fields" (0.001 seconds)
+    ✔ "Strips $schema from tool parameters" (0.001 seconds)
+    ✔ "No-op when no messages or tools" (0.001 seconds)
+Suite "RequestCleaner" passed after 0.001 seconds
+Test run with 46 tests failed after 2.936 seconds with 2 issue(s)
+Testing started
+✖ Error 
+  The command `xcodebuild test -scheme CCGateWay -workspace /Users/chaileasevn/Desktop/Code/claude-code-gateway/CCGateWay/CCGateWay.xcworkspace -destination platform=macOS,arch=arm64` exited with error code 65 and message: 
+  2026-03-04 23:11:48.745 xcodebuild[12381:60407] [MT] IDETesting: Failed to construct test run summaries and write them to the result bundle: fileSystemFailure(reason: "mkstemp: No such file or directory") 
+  2026-03-04 23:11:48.746 xcodebuild[12381:60407] [MT] IDETestOperationsObserverDebug: 8.245 elapsed -- Testing started completed. 
+  2026-03-04 23:11:48.746 xcodebuild[12381:60407] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start 
+  2026-03-04 23:11:48.746 xcodebuild[12381:60407] [MT] IDETestOperationsObserverDebug: 8.245 sec, +8.245 sec -- end 
+  2026-03-04 23:11:48.842 xcodebuild[12381:60407] [MT] IDEResultKit: Warning: While writing a result bundle to /Users/chaileasevn/Library/Developer/Xcode/DerivedData/CCGateWay-afwarqjwimsmzdhdviuzkjmvzllt/Logs/Test/Test-CCGateWay-2026.03.04_23-11-31-+0700.xcresult, not all contents have been imported, as the Staging directory still contains the following files/directories: ["1_Test"] 
+  2026-03-04 23:11:48.845 xcodebuild[12381:60407] [MT] IDETesting: Result bundle saving failed with error: Error Domain=IDEFoundationErrorDomain Code=12 "The result bundle could not be saved due to multiple errors: failed to import activity log, underlying error: fileSystemFailure(reason: "mkstemp: No such file or directory"), The operation couldn’t be completed. (CASDB.FileBackedCASDatabase.Error error 0.)" UserInfo={NSLocalizedDescription=The result bundle could not be saved due to multiple errors: failed to import activity log, underlying error: fileSystemFailure(reason: "mkstemp: No such file or directory"), The operation couldn’t be completed. (CASDB.FileBackedCASDatabase.Error error 0.), NSUnderlyingError=0x11b0de250 {Error Domain=IDEFoundation.ResultBundleError Code=2 "failed to import activity log, underlying error: fileSystemFailure(reason: "mkstemp: No such file or directory")"}}. 
+  Failing tests: 
+  	GroqAdapterTests.stripsSchema() 
+  	OpenAIAdapterTests.transformBasicRequest() 
+  ** TEST FAILED ** 
+
+  Sorry this didn’t work. Here’s what to try next: 
+   ▸ If the error is actionable, address it
+   ▸ If the error is not actionable, let's discuss it in the ]8;;https://community.tuist.dev/c/troubleshooting-how-to/6\Troubleshooting & how to]8;;\
+   ▸ If you are very certain it's a bug, ]8;;https://github.com/tuist/tuist\file an issue]8;;\
+   ▸ Check out the logs at /Users/chaileasevn/.local/state/tuist/logs/90E75A91-3051-40E8-B197-29ADB4DC6EDB.log
