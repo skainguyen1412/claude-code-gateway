@@ -178,9 +178,7 @@ curl -N http://127.0.0.1:3456/v1/messages \
 
 ## Roadmap
 
-- [ ] Packaged releases (`.dmg` / `.zip`) + auto-update
-- [ ] More provider-specific edge-case handling
-- [ ] Automated pricing / model catalog updates
+- [ ] Support for more models and providers
 
 ## Contributing
 
