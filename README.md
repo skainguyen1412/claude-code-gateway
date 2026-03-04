@@ -191,3 +191,8 @@ Issues and PRs welcome. For provider compatibility issues, please include:
 ## Disclaimer
 
 Not affiliated with Anthropic, Google, OpenAI, OpenRouter, DeepSeek, or Groq. Provider names are used only to describe compatibility.
+
+## Acknowledgements
+
+- [Claude Code Router](https://github.com/nicholasgriffintn/claude-code-router) -- inspiration for this project
+- [LiteLLM](https://github.com/BerriAI/litellm) -- model pricing data
