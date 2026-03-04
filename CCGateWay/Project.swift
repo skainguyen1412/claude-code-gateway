@@ -16,6 +16,7 @@ let project = Project(
                 "CCGateWay/Sources",
                 "CCGateWay/Resources",
             ],
+            entitlements: "CCGateWay.entitlements",
             dependencies: [
                 .external(name: "Vapor")
             ],
@@ -24,6 +25,7 @@ let project = Project(
                     "CODE_SIGN_STYLE": "Automatic",
                     "CODE_SIGN_IDENTITY": "-",
                     "DEVELOPMENT_TEAM": "52DR6F4N35",
+                    "ENABLE_HARDENED_RUNTIME": "YES",
                 ],
                 configurations: [],
                 defaultSettings: .recommended
