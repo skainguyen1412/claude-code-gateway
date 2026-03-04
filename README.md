@@ -5,8 +5,8 @@
 <h1 align="center">Claude Code Gateway</h1>
 
 <p align="center">
-  <strong>Route Claude Code to any LLM provider from your Mac menu bar.</strong><br>
-  One-click switching &bull; Slot-based model mapping &bull; Local cost tracking
+  <strong>Use Claude Code with any LLM -- one click from your Mac menu bar.</strong><br>
+  Zero config &bull; Instant provider switching &bull; Local cost tracking
 </p>
 
 <p align="center">
@@ -17,37 +17,52 @@
 
 ---
 
-CCGateWay is a native macOS menu bar app with an embedded local gateway server. Point Claude Code at it once, then switch between Gemini, OpenAI, OpenRouter, DeepSeek, Groq -- or any OpenAI-compatible API -- without touching your workflow.
+## What is CCGateWay?
 
-## Why
+Claude Code only speaks Anthropic's API. If you want to use it with Gemini, OpenAI, DeepSeek, Groq, OpenRouter, or any other provider, you'd normally need to wrestle with proxy setups, env vars, and restarts every time you switch.
 
-| Problem | CCGateWay |
-|---------|-----------|
-| Switching providers means editing env vars and restarting | One click in the menu bar |
-| Claude Code assumes Anthropic models | Slot-based routing maps `default` / `background` / `think` / `longContext` to any provider's models |
-| No visibility into what you're spending | Token + cost tracking, persisted locally |
-| Existing proxies need Node / Python / Docker | Pure Swift -- SwiftUI UI + embedded Vapor server, nothing else to install |
+CCGateWay fixes that. It's a lightweight native macOS menu bar app that sits between Claude Code and your LLM provider. It translates requests and responses on the fly -- Claude Code sends its usual Anthropic-format calls, CCGateWay converts them into whatever format your provider expects (OpenAI, Gemini, etc.), gets the response, and converts it back to Anthropic format before returning it. Claude Code never knows the difference.
+
+**The result:** you can use Claude Code with any model from any provider, and switching is one click in the menu bar. No restarts, no config editing, no terminal commands.
+
+### Dead simple to set up
+
+1. Build and run the app -- it lives in your menu bar
+2. Add a provider (paste your API key, pick your models)
+3. Done. CCGateWay auto-configures Claude Code for you
+
+No Node. No Python. No Docker. No YAML files. Just a native Mac app that works.
 
 ## How It Works
 
 ```
 Claude Code  ──(Anthropic Messages API)──►  CCGateWay (127.0.0.1)
                                                 │
+                                          translates request
+                                                │
                                       ┌─────────┼─────────┐
                                       ▼         ▼         ▼
                                    Gemini    OpenAI    OpenRouter
                                              DeepSeek  Groq
                                              (any OpenAI-compatible)
+                                                │
+                                        translates response
+                                                │
+                                                ▼
+                                    Claude Code receives
+                                    Anthropic-shaped response
 ```
 
-The app exposes two endpoints on `127.0.0.1`:
+CCGateWay runs a local server on `127.0.0.1` that exposes Anthropic-compatible endpoints. Under the hood, it handles the full translation between API formats:
+
+- **Request translation** -- Anthropic message format (system prompts, tool definitions, content blocks) is converted to the target provider's format (OpenAI chat completions, Gemini generateContent, etc.)
+- **Response translation** -- Provider responses are converted back to Anthropic's format, including content blocks, stop reasons, usage tokens, and tool call results
+- **Streaming** -- SSE streams from any provider are translated chunk-by-chunk into Anthropic SSE events in real time
 
 | Endpoint | Purpose |
 |----------|---------|
 | `POST /v1/messages` | Anthropic-compatible messages (streaming + non-streaming) |
 | `GET  /health` | Health check |
-
-Claude Code sends requests as usual. CCGateWay translates them to the active provider's format and returns Anthropic-shaped responses.
 
 ### Slot-Based Routing
 
