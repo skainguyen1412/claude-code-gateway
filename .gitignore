@@ -53,6 +53,7 @@ Package.resolved
 .agent/
 .agents/
 .docs/
+docs/
 
 ### Misc ###
 *.swp
