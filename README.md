@@ -82,6 +82,8 @@ Claude Code uses different model names for different tasks (e.g. "haiku" for bac
 
 ## Features
 
+- **Multi-model presets** -- use different models across different providers in a single Claude Code session
+- **Easy to set up** -- just add your providers, paste your API keys, pick your models, and you're good to go. All your providers and model configurations are setted up.
 - **Menu bar quick switch** -- switch providers, or optionally activate preset mode
 - **Dashboard** -- configure providers and optional presets from one Providers menu
 - **Anthropic-compatible gateway** -- drop-in replacement, streaming + non-streaming
