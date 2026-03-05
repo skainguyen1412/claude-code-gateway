@@ -101,8 +101,7 @@ struct MenuBarDropdown: View {
                                     MenuQuickSwitchRow(
                                         name: providerName,
                                         kindLabel: "Provider",
-                                        icon: ProviderConfig.providerIcon(for: providerName)
-                                            .sfSymbol,
+                                        iconInfo: ProviderConfig.providerIcon(for: providerName),
                                         isActive: config.activePreset.isEmpty
                                             && config.activeProvider == providerName,
                                         trailing: formatCost(
@@ -119,7 +118,9 @@ struct MenuBarDropdown: View {
                                     MenuQuickSwitchRow(
                                         name: presetName,
                                         kindLabel: "Preset",
-                                        icon: "slider.horizontal.3",
+                                        iconInfo: ProviderIconInfo(
+                                            assetName: nil, sfSymbol: "slider.horizontal.3",
+                                            color: .blue),
                                         isActive: config.activePreset == presetName,
                                         trailing: nil
                                     ) {
@@ -172,7 +173,7 @@ struct MenuBarDropdown: View {
 private struct MenuQuickSwitchRow: View {
     let name: String
     let kindLabel: String
-    let icon: String
+    let iconInfo: ProviderIconInfo
     let isActive: Bool
     let trailing: String?
     let action: () -> Void
@@ -181,15 +182,14 @@ private struct MenuQuickSwitchRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(isActive ? .blue : .secondary)
-                    .frame(width: 20, height: 20)
+                ProviderIconView(icon: iconInfo, size: 20)
+                    .foregroundColor(isActive ? iconInfo.color : .secondary)
+                    .frame(width: 24, height: 24)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
                             .fill(
                                 isActive
-                                    ? Color.blue.opacity(0.12)
+                                    ? iconInfo.color.opacity(0.12)
                                     : Color(NSColor.controlBackgroundColor).opacity(0.5))
                     )
 
@@ -212,7 +212,7 @@ private struct MenuQuickSwitchRow: View {
 
                 if isActive {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(iconInfo.color)
                         .font(.system(size: 14))
                 }
             }
@@ -222,14 +222,14 @@ private struct MenuQuickSwitchRow: View {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(
                         isActive
-                            ? Color.blue.opacity(0.08)
+                            ? iconInfo.color.opacity(0.08)
                             : (isHovered ? Color(NSColor.quaternaryLabelColor) : Color.clear))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(
                         isActive
-                            ? Color.blue.opacity(0.3)
+                            ? iconInfo.color.opacity(0.3)
                             : (isHovered ? Color(NSColor.gridColor) : Color.clear), lineWidth: 1)
             )
         }
