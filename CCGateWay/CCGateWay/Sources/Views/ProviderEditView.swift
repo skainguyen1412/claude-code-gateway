@@ -57,6 +57,10 @@ struct ProviderEditView: View {
             _backgroundSlot = State(initialValue: p.slots["background"] ?? "")
             _thinkSlot = State(initialValue: p.slots["think"] ?? "")
             _longContextSlot = State(initialValue: p.slots["longContext"] ?? "")
+        } else {
+            _name = State(initialValue: "New Custom Provider")
+            _type = State(initialValue: "openai")
+            _baseUrl = State(initialValue: "http://localhost:11434/v1")
         }
     }
 
@@ -149,7 +153,7 @@ struct ProviderEditView: View {
                 }
                 .keyboardShortcut(.cancelAction)
 
-                Button(isTemplate ? "Enable Provider" : "Save") {
+                Button(isTemplate ? "Enable Provider" : (!isEditing ? "Add Provider" : "Save")) {
                     saveProvider()
                     onSave?(name)
                     dismiss()

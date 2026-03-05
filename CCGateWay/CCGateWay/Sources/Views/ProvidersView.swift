@@ -1,21 +1,24 @@
 import SwiftUI
 
 /// A unified item representing either a configured provider or an available template.
-private enum ProviderListItem: Identifiable {
+private enum ProviderListItem: Identifiable, Equatable {
     case configured(key: String, provider: ProviderConfig)
     case template(provider: ProviderConfig)
+    case draft
 
     var id: String {
         switch self {
         case .configured(let key, _): return key
         case .template(let provider): return "template_\(provider.name)"
+        case .draft: return "draft_custom_provider"
         }
     }
 
-    var provider: ProviderConfig {
+    var provider: ProviderConfig? {
         switch self {
         case .configured(_, let p): return p
         case .template(let p): return p
+        case .draft: return nil
         }
     }
 
@@ -28,6 +31,7 @@ private enum ProviderListItem: Identifiable {
 struct ProvidersView: View {
     @EnvironmentObject var config: GatewayConfig
     @State private var selectedProviderID: String?
+    @State private var isCreatingCustomProvider: Bool = false
 
     /// Merges configured providers and unconfigured templates into one flat list.
     /// Configured first (sorted), then unconfigured templates (in catalog order).
@@ -43,31 +47,78 @@ struct ProvidersView: View {
             .filter { !configuredKeys.contains($0.name.lowercased()) }
             .map { .template(provider: $0) }
 
-        return configured + templates
+        var items = configured + templates
+        if isCreatingCustomProvider {
+            items.append(.draft)
+        }
+        return items
     }
 
     var body: some View {
         HStack(spacing: 0) {
             // Unified Providers List
             List(allItems, selection: $selectedProviderID) { item in
-                ProviderRow(
-                    provider: item.provider,
-                    isActive: {
-                        if case .configured(let key, _) = item {
-                            return config.activeProvider == key
+                switch item {
+                case .configured(let key, let provider):
+                    ProviderRow(
+                        provider: provider, isActive: config.activeProvider == key,
+                        isConfigured: true
+                    )
+                    .tag(item.id)
+                case .template(let provider):
+                    ProviderRow(provider: provider, isActive: false, isConfigured: false)
+                        .tag(item.id)
+                case .draft:
+                    HStack(spacing: 12) {
+                        ProviderIconView(
+                            icon: ProviderIconInfo(
+                                assetName: nil, sfSymbol: "plus.circle.dashed", color: .blue),
+                            size: 24
+                        )
+                        .frame(width: 32, height: 32)
+                        .background(Color.blue.opacity(0.12))
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("New Custom Provider")
+                                .fontWeight(.medium)
+                            Text("Setup")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
-                        return false
-                    }(),
-                    isConfigured: item.isConfigured
-                )
-                .tag(item.id)
+                    }
+                    .padding(.vertical, 4)
+                    .tag(item.id)
+                }
             }
             .listStyle(.sidebar)
             .frame(width: 250)
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button(action: {
+                        isCreatingCustomProvider = true
+                        selectedProviderID = "draft_custom_provider"
+                    }) {
+                        Label("Add Provider", systemImage: "plus")
+                    }
+                    .help("Add Custom Provider")
+                }
+            }
+            .onChange(of: selectedProviderID) { newID in
+                if newID != "draft_custom_provider" && isCreatingCustomProvider {
+                    isCreatingCustomProvider = false
+                }
+            }
 
             // Detail / Edit Area
             if let selectedID = selectedProviderID {
-                if selectedID.hasPrefix("template_"),
+                if selectedID == "draft_custom_provider" {
+                    ProviderEditView(provider: nil, isTemplate: false) { newName in
+                        isCreatingCustomProvider = false
+                        selectedProviderID = newName
+                    }
+                    .id("draft")
+                } else if selectedID.hasPrefix("template_"),
                     let templateName = selectedID.dropFirst("template_".count)
                         .description
                         .trimmingCharacters(in: .whitespaces) as String?,
