@@ -5,17 +5,23 @@ final class GatewayConfig: ObservableObject {
     @Published var activeProvider: String
     @Published var port: Int
     @Published var providers: [String: ProviderConfig]
+    @Published var presets: [String: PresetConfig]
+    @Published var activePreset: String
     @Published var autoStartOnLogin: Bool
 
     init(
         activeProvider: String = "",
         port: Int = 3456,
         providers: [String: ProviderConfig] = [:],
+        presets: [String: PresetConfig] = [:],
+        activePreset: String = "",
         autoStartOnLogin: Bool = false
     ) {
         self.activeProvider = activeProvider
         self.port = port
         self.providers = providers
+        self.presets = presets
+        self.activePreset = activePreset
         self.autoStartOnLogin = autoStartOnLogin
     }
 
@@ -25,7 +31,44 @@ final class GatewayConfig: ObservableObject {
         var activeProvider: String
         var port: Int
         var providers: [String: ProviderConfig]
+        var presets: [String: PresetConfig]
+        var activePreset: String
         var autoStartOnLogin: Bool
+
+        enum CodingKeys: String, CodingKey {
+            case activeProvider
+            case port
+            case providers
+            case presets
+            case activePreset
+            case autoStartOnLogin
+        }
+
+        init(
+            activeProvider: String,
+            port: Int,
+            providers: [String: ProviderConfig],
+            presets: [String: PresetConfig],
+            activePreset: String,
+            autoStartOnLogin: Bool
+        ) {
+            self.activeProvider = activeProvider
+            self.port = port
+            self.providers = providers
+            self.presets = presets
+            self.activePreset = activePreset
+            self.autoStartOnLogin = autoStartOnLogin
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            activeProvider = try container.decodeIfPresent(String.self, forKey: .activeProvider) ?? ""
+            port = try container.decodeIfPresent(Int.self, forKey: .port) ?? 3456
+            providers = try container.decodeIfPresent([String: ProviderConfig].self, forKey: .providers) ?? [:]
+            presets = try container.decodeIfPresent([String: PresetConfig].self, forKey: .presets) ?? [:]
+            activePreset = try container.decodeIfPresent(String.self, forKey: .activePreset) ?? ""
+            autoStartOnLogin = try container.decodeIfPresent(Bool.self, forKey: .autoStartOnLogin) ?? false
+        }
     }
 
     static var configDirectory: URL {
@@ -48,12 +91,16 @@ final class GatewayConfig: ObservableObject {
         else {
             return GatewayConfig()
         }
-        return GatewayConfig(
+        let config = GatewayConfig(
             activeProvider: storage.activeProvider,
             port: storage.port,
             providers: storage.providers,
+            presets: storage.presets,
+            activePreset: storage.activePreset,
             autoStartOnLogin: storage.autoStartOnLogin
         )
+        config.migrateProvidersToPresetsIfNeeded()
+        return config
     }
 
     func save() {
@@ -61,6 +108,8 @@ final class GatewayConfig: ObservableObject {
             activeProvider: activeProvider,
             port: port,
             providers: providers,
+            presets: presets,
+            activePreset: activePreset,
             autoStartOnLogin: autoStartOnLogin
         )
         let encoder = JSONEncoder()
@@ -76,11 +125,40 @@ final class GatewayConfig: ObservableObject {
         providers[activeProvider]
     }
 
+    var activePresetConfig: PresetConfig? {
+        presets[activePreset]
+    }
+
     func switchProvider(to name: String) {
         guard providers[name] != nil else { return }
         activeProvider = name
         save()
         syncWithClaudeCode()
+    }
+
+    func switchPreset(to name: String) {
+        guard presets[name] != nil else { return }
+        activePreset = name
+        save()
+        syncWithClaudeCode()
+    }
+
+    func migrateProvidersToPresetsIfNeeded() {
+        guard presets.isEmpty, let active = providers[activeProvider] else { return }
+
+        let migratedName = "Migrated Preset"
+        let migrated = PresetConfig(
+            name: migratedName,
+            slots: [
+                "default": .init(providerName: active.name, modelId: active.slots["default"] ?? ""),
+                "background": .init(providerName: active.name, modelId: active.slots["background"] ?? ""),
+                "think": .init(providerName: active.name, modelId: active.slots["think"] ?? ""),
+                "longContext": .init(providerName: active.name, modelId: active.slots["longContext"] ?? ""),
+            ]
+        )
+
+        presets[migratedName] = migrated
+        activePreset = migratedName
     }
 
     // MARK: - Auto-Sync
@@ -182,3 +260,19 @@ final class GatewayConfig: ObservableObject {
         }
     }
 }
+
+#if DEBUG
+extension GatewayConfig {
+    static func decodeFromDataForTests(_ data: Data) throws -> GatewayConfig {
+        let storage = try JSONDecoder().decode(StorageModel.self, from: data)
+        return GatewayConfig(
+            activeProvider: storage.activeProvider,
+            port: storage.port,
+            providers: storage.providers,
+            presets: storage.presets,
+            activePreset: storage.activePreset,
+            autoStartOnLogin: storage.autoStartOnLogin
+        )
+    }
+}
+#endif
