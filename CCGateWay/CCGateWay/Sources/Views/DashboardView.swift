@@ -3,6 +3,7 @@ import SwiftUI
 enum DashboardTab: String, CaseIterable, Identifiable {
     case overview = "Overview"
     case providers = "Providers"
+    case presets = "Presets"
     case logs = "Request Log"
     case usage = "Usage & Cost"
     case settings = "Settings"
@@ -13,6 +14,7 @@ enum DashboardTab: String, CaseIterable, Identifiable {
         switch self {
         case .overview: return "gauge"
         case .providers: return "network"
+        case .presets: return "slider.horizontal.3"
         case .logs: return "list.bullet.rectangle.fill"
         case .usage: return "chart.bar.fill"
         case .settings: return "gearshape"
@@ -50,6 +52,8 @@ struct DashboardView: View {
             OverviewView()
         case .providers:
             ProvidersView()
+        case .presets:
+            PresetsView()
         case .logs:
             RequestLogView()
         case .usage:

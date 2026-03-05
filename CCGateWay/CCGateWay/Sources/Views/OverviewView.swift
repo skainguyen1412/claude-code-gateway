@@ -122,8 +122,58 @@ struct OverviewView: View {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                         .stroke(Color.primary.opacity(0.08), lineWidth: 1)
                 )
+
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Image(systemName: "slider.horizontal.3")
+                            .foregroundColor(.purple)
+                        Text("Active Preset")
+                            .font(.headline)
+                    }
+                    Divider()
+
+                    if let activePreset = config.activePresetConfig {
+                        Text(activePreset.name)
+                            .font(.title3)
+                            .fontWeight(.semibold)
+
+                        ForEach(PresetValidator.requiredSlots, id: \.self) { slot in
+                            if let target = activePreset.slots[slot] {
+                                HStack(alignment: .firstTextBaseline) {
+                                    Text("\(displayName(for: slot)):")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .frame(width: 95, alignment: .leading)
+                                    Text("\(target.providerName) -> \(target.modelId)")
+                                        .font(.caption)
+                                        .textSelection(.enabled)
+                                }
+                            }
+                        }
+                    } else {
+                        Text("No preset selected.")
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(20)
+                .background(Color(nsColor: .controlBackgroundColor).opacity(0.5))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+                )
             }
             .padding(32)
+        }
+    }
+
+    private func displayName(for slot: String) -> String {
+        switch slot {
+        case "default": return "Default"
+        case "background": return "Background"
+        case "think": return "Think"
+        case "longContext": return "Long Context"
+        default: return slot
         }
     }
 }
