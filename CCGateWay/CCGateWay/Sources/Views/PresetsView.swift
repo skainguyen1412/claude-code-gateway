@@ -76,7 +76,7 @@ struct PresetsView: View {
         if selectedPresetID == PresetListItem.draft.id {
             PresetEditView(
                 preset: nil,
-                providerNames: providerNames,
+                providers: config.providers,
                 activePresetName: config.activePreset,
                 onSave: { savePreset($0, replacing: $1) },
                 onDelete: nil,
@@ -87,7 +87,7 @@ struct PresetsView: View {
         {
             PresetEditView(
                 preset: preset,
-                providerNames: providerNames,
+                providers: config.providers,
                 activePresetName: config.activePreset,
                 onSave: { savePreset($0, replacing: $1) },
                 onDelete: { deletePreset(named: selectedName) },
@@ -174,7 +174,7 @@ private struct PresetRow: View {
 
 struct PresetEditView: View {
     let preset: PresetConfig?
-    let providerNames: [String]
+    let providers: [String: ProviderConfig]
     let activePresetName: String
     let onSave: (PresetConfig, String?) -> Void
     let onDelete: (() -> Void)?
@@ -184,22 +184,26 @@ struct PresetEditView: View {
     @State private var slots: [String: PresetSlotTarget]
     @State private var validationErrors: [String] = []
 
+    private var providerNames: [String] {
+        providers.keys.sorted()
+    }
+
     init(
         preset: PresetConfig?,
-        providerNames: [String],
+        providers: [String: ProviderConfig],
         activePresetName: String,
         onSave: @escaping (PresetConfig, String?) -> Void,
         onDelete: (() -> Void)?,
         onActivate: ((String) -> Void)?
     ) {
         self.preset = preset
-        self.providerNames = providerNames
+        self.providers = providers
         self.activePresetName = activePresetName
         self.onSave = onSave
         self.onDelete = onDelete
         self.onActivate = onActivate
 
-        let firstProvider = providerNames.first ?? ""
+        let firstProvider = providers.keys.sorted().first ?? ""
         var initialSlots: [String: PresetSlotTarget] = [:]
         for slot in PresetValidator.requiredSlots {
             if let existing = preset?.slots[slot] {
@@ -243,8 +247,12 @@ struct PresetEditView: View {
                                     Text(providerName).tag(providerName)
                                 }
                             }
-                            TextField("Model ID", text: modelBinding(for: slot))
-                                .textFieldStyle(.roundedBorder)
+                            ModelSlotPicker(
+                                label: "Model",
+                                slotName: slot,
+                                selection: modelBinding(for: slot),
+                                catalogKey: catalogKey(for: slot)
+                            )
                         }
                     }
                     .padding(.vertical, 4)
@@ -316,6 +324,11 @@ struct PresetEditView: View {
                 slots[slot] = target
             }
         )
+    }
+
+    private func catalogKey(for slot: String) -> String {
+        let providerName = slots[slot]?.providerName ?? ""
+        return providers[providerName]?.catalogKey ?? ""
     }
 
     private func slotTitle(_ slot: String) -> String {

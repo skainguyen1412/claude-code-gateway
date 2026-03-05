@@ -24,10 +24,6 @@ struct ProvidersView: View {
     @State private var isCreatingCustomProvider: Bool = false
     @State private var isCreatingPreset: Bool = false
 
-    private var providerNames: [String] {
-        config.providers.keys.sorted()
-    }
-
     private var providerItems: [ProviderMenuItem] {
         let configuredKeys = Set(config.providers.keys.map { $0.lowercased() })
 
@@ -163,7 +159,7 @@ struct ProvidersView: View {
         } else if selectedItemID == ProviderMenuItem.draftPreset.id {
             PresetEditView(
                 preset: nil,
-                providerNames: providerNames,
+                providers: config.providers,
                 activePresetName: config.activePreset,
                 onSave: { savePreset($0, replacing: $1) },
                 onDelete: nil,
@@ -194,7 +190,7 @@ struct ProvidersView: View {
             if let preset = config.presets[presetName] {
                 PresetEditView(
                     preset: preset,
-                    providerNames: providerNames,
+                    providers: config.providers,
                     activePresetName: config.activePreset,
                     onSave: { savePreset($0, replacing: $1) },
                     onDelete: { deletePreset(named: presetName) },
