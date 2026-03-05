@@ -8,7 +8,6 @@ enum ConnectionTestState: Equatable {
 }
 
 struct ProviderEditView: View {
-    @Environment(\.dismiss) var dismiss
     @EnvironmentObject var config: GatewayConfig
 
     // State
@@ -28,6 +27,8 @@ struct ProviderEditView: View {
     let isTemplate: Bool
     let originalName: String?
     var onSave: ((String) -> Void)? = nil
+    var onCancel: (() -> Void)? = nil
+    var onDeleted: (() -> Void)? = nil
 
     let providerTypes = ["gemini", "openai"]
 
@@ -42,11 +43,13 @@ struct ProviderEditView: View {
         return type
     }
 
-    init(provider: ProviderConfig?, isTemplate: Bool = false, onSave: ((String) -> Void)? = nil) {
+    init(provider: ProviderConfig?, isTemplate: Bool = false, onSave: ((String) -> Void)? = nil, onCancel: (() -> Void)? = nil, onDeleted: (() -> Void)? = nil) {
         self.isTemplate = isTemplate
         self.isEditing = provider != nil && !isTemplate
         self.originalName = isTemplate ? nil : provider?.name
         self.onSave = onSave
+        self.onCancel = onCancel
+        self.onDeleted = onDeleted
 
         if let p = provider {
             _name = State(initialValue: p.name)
@@ -150,14 +153,13 @@ struct ProviderEditView: View {
                 }
                 Spacer()
                 Button("Cancel") {
-                    dismiss()
+                    onCancel?()
                 }
                 .keyboardShortcut(.cancelAction)
 
                 Button(isTemplate ? "Enable Provider" : (!isEditing ? "Add Provider" : "Save")) {
                     saveProvider()
                     onSave?(name)
-                    dismiss()
                 }
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.defaultAction)
@@ -180,7 +182,7 @@ struct ProviderEditView: View {
 
                 Button(role: .destructive) {
                     if deleteProvider() {
-                        dismiss()
+                        onDeleted?()
                     }
                 } label: {
                     Text("Delete Provider")

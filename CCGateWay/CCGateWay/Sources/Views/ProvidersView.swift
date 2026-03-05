@@ -151,10 +151,18 @@ struct ProvidersView: View {
     @ViewBuilder
     private var detailView: some View {
         if selectedItemID == ProviderMenuItem.draftProvider.id {
-            ProviderEditView(provider: nil, isTemplate: false) { newName in
-                isCreatingCustomProvider = false
-                selectedItemID = "provider_\(newName)"
-            }
+            ProviderEditView(
+                provider: nil,
+                isTemplate: false,
+                onSave: { newName in
+                    isCreatingCustomProvider = false
+                    selectedItemID = "provider_\(newName)"
+                },
+                onCancel: {
+                    isCreatingCustomProvider = false
+                    selectedItemID = nil
+                }
+            )
             .id("draft_provider")
         } else if selectedItemID == ProviderMenuItem.draftPreset.id {
             PresetEditView(
@@ -173,16 +181,32 @@ struct ProvidersView: View {
                 .trimmingCharacters(in: .whitespaces) as String?,
             let template = ProviderConfig.templates.first(where: { $0.name == templateName })
         {
-            ProviderEditView(provider: template, isTemplate: true) { newName in
-                selectedItemID = "provider_\(newName)"
-            }
+            ProviderEditView(
+                provider: template,
+                isTemplate: true,
+                onSave: { newName in
+                    selectedItemID = "provider_\(newName)"
+                },
+                onCancel: {
+                    selectedItemID = nil
+                }
+            )
             .id(selectedID)
         } else if let selectedID = selectedItemID,
             selectedID.hasPrefix("provider_"),
             let provider = config.providers[String(selectedID.dropFirst("provider_".count))]
         {
-            ProviderEditView(provider: provider, isTemplate: false)
-                .id(selectedID)
+            ProviderEditView(
+                provider: provider,
+                isTemplate: false,
+                onCancel: {
+                    selectedItemID = nil
+                },
+                onDeleted: {
+                    selectedItemID = nil
+                }
+            )
+            .id(selectedID)
         } else if let selectedID = selectedItemID,
             selectedID.hasPrefix("preset_")
         {
