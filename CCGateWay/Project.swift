@@ -10,7 +10,9 @@ let project = Project(
             bundleId: "dev.tuist.CCGateWay",
             deploymentTargets: .macOS("14.0"),
             infoPlist: .extendingDefault(with: [
-                "LSUIElement": .boolean(true)
+                "LSUIElement": .boolean(true),
+                "NSMainStoryboardFile": .string(""),
+                "NSPrincipalClass": .string("NSApplication"),
             ]),
             buildableFolders: [
                 "CCGateWay/Sources",
@@ -23,7 +25,7 @@ let project = Project(
             settings: .settings(
                 base: [
                     "CODE_SIGN_STYLE": "Automatic",
-                    "CODE_SIGN_IDENTITY": "-",
+                    "CODE_SIGN_IDENTITY": "Apple Development",
                     "DEVELOPMENT_TEAM": "52DR6F4N35",
                     "ENABLE_HARDENED_RUNTIME": "YES",
                 ],
