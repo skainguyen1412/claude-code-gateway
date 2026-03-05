@@ -2,9 +2,70 @@ import AsyncHTTPClient
 import Foundation
 import Vapor
 
+struct ResolvedGatewayTarget {
+    let provider: ProviderConfig
+    let modelId: String
+    let slot: String
+    let apiKey: String
+}
+
 struct GatewayRoutes {
     let config: GatewayConfig
     let server: GatewayServer
+
+    static func resolveTarget(
+        requestedModel: String,
+        config: GatewayConfig,
+        keyLookup: (String) -> String?
+    ) throws -> ResolvedGatewayTarget {
+        let slot = SlotRouter.resolveSlot(requestedModel: requestedModel)
+
+        if let activePreset = config.activePresetConfig {
+            let target = try PresetRouter.resolveSlotTarget(slot: slot, preset: activePreset)
+            guard let provider = config.providers[target.providerName] else {
+                throw Abort(
+                    .badRequest,
+                    reason: "Active preset maps slot '\(slot)' to unknown provider '\(target.providerName)'."
+                )
+            }
+            guard let apiKey = keyLookup("\(provider.name)_api_key") else {
+                throw Abort(.unauthorized, reason: "Missing API key for provider '\(provider.name)'.")
+            }
+            return ResolvedGatewayTarget(
+                provider: provider,
+                modelId: target.modelId,
+                slot: slot,
+                apiKey: apiKey
+            )
+        }
+
+        guard let provider = config.activeProviderConfig else {
+            throw Abort(.badRequest, reason: "No active provider configured.")
+        }
+
+        let (_, providerModel) = SlotRouter.resolve(
+            requestedModel: requestedModel,
+            provider: provider
+        )
+        guard let apiKey = keyLookup("\(provider.name)_api_key") else {
+            throw Abort(.unauthorized, reason: "Missing API key for active provider.")
+        }
+
+        return ResolvedGatewayTarget(
+            provider: provider,
+            modelId: providerModel,
+            slot: slot,
+            apiKey: apiKey
+        )
+    }
+
+    static func resolveTargetForTests(
+        requestedModel: String,
+        config: GatewayConfig,
+        keyLookup: (String) -> String?
+    ) throws -> ResolvedGatewayTarget {
+        try resolveTarget(requestedModel: requestedModel, config: config, keyLookup: keyLookup)
+    }
 
     func boot(_ app: Application) throws {
         // Health check
@@ -17,15 +78,6 @@ struct GatewayRoutes {
             let startTime = Date()
 
             do {
-                guard let configProvider = config.activeProviderConfig else {
-                    throw Abort(.badRequest, reason: "No active provider configured.")
-                }
-
-                guard let apiKey = KeychainManager.load(key: "\(configProvider.name)_api_key")
-                else {
-                    throw Abort(.unauthorized, reason: "Missing API key for active provider.")
-                }
-
                 // 1. Parse Anthropic request body
                 let bodyData = req.body.data.flatMap { Data(buffer: $0) } ?? Data()
                 guard
@@ -36,11 +88,14 @@ struct GatewayRoutes {
                     throw Abort(.badRequest, reason: "Invalid Anthropic request body")
                 }
 
-                // 2. Resolve slot and provider model
-                let (slot, providerModel) = SlotRouter.resolve(
+                let resolved = try Self.resolveTarget(
                     requestedModel: requestedModel,
-                    provider: configProvider
+                    config: config,
+                    keyLookup: { KeychainManager.load(key: $0) }
                 )
+                let configProvider = resolved.provider
+                let providerModel = resolved.modelId
+                let slot = resolved.slot
 
                 let isStreaming = (anthropicBody["stream"] as? Bool) ?? false
 
@@ -50,7 +105,7 @@ struct GatewayRoutes {
                     anthropicBody: anthropicBody,
                     targetModel: providerModel,
                     provider: configProvider,
-                    apiKey: apiKey,
+                    apiKey: resolved.apiKey,
                     forceNonStreaming: !isStreaming
                 )
 
