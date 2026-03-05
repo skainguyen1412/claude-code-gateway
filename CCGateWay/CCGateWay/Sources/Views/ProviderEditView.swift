@@ -179,8 +179,9 @@ struct ProviderEditView: View {
                 .padding(.top, 10)
 
                 Button(role: .destructive) {
-                    deleteProvider()
-                    dismiss()
+                    if deleteProvider() {
+                        dismiss()
+                    }
                 } label: {
                     Text("Delete Provider")
                         .foregroundColor(.red)
@@ -214,6 +215,7 @@ struct ProviderEditView: View {
         )
 
         if isEditing, let oldName = originalName, oldName != name {
+            config.updatePresetProviderReferences(from: oldName, to: name)
             config.providers.removeValue(forKey: oldName)
             KeychainManager.delete(key: "\(oldName)_api_key")
         }
@@ -231,13 +233,13 @@ struct ProviderEditView: View {
         config.save()
     }
 
-    private func deleteProvider() {
-        guard let name = originalName else { return }
+    private func deleteProvider() -> Bool {
+        guard let name = originalName else { return false }
         let blockers = config.presetsUsingProvider(name)
         guard blockers.isEmpty else {
             deleteErrorMessage =
                 "Cannot delete '\(name)'. It is used by preset(s): \(blockers.joined(separator: ", "))."
-            return
+            return false
         }
 
         deleteErrorMessage = nil
@@ -247,6 +249,7 @@ struct ProviderEditView: View {
             config.activeProvider = config.providers.keys.first ?? ""
         }
         config.save()
+        return true
     }
 
     private func runTestConnection() {

@@ -181,6 +181,28 @@ final class GatewayConfig: ObservableObject {
             .sorted()
     }
 
+    func updatePresetProviderReferences(from oldName: String, to newName: String) {
+        guard oldName.caseInsensitiveCompare(newName) != .orderedSame else { return }
+
+        for key in presets.keys {
+            guard var preset = presets[key] else { continue }
+            var updatedSlots = preset.slots
+            var changed = false
+
+            for (slot, target) in preset.slots {
+                if target.providerName.caseInsensitiveCompare(oldName) == .orderedSame {
+                    updatedSlots[slot] = PresetSlotTarget(providerName: newName, modelId: target.modelId)
+                    changed = true
+                }
+            }
+
+            if changed {
+                preset.slots = updatedSlots
+                presets[key] = preset
+            }
+        }
+    }
+
     func activeSlotModels() -> (defaultModel: String, thinkModel: String, backgroundModel: String) {
         if let preset = activePresetConfig {
             let defaultModel =
