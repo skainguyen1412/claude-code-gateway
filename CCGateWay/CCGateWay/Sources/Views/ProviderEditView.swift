@@ -22,6 +22,7 @@ struct ProviderEditView: View {
     @State private var apiKey: String = ""
     @State private var isEnabled: Bool = true
     @State private var testState: ConnectionTestState = .idle
+    @State private var deleteErrorMessage: String?
 
     let isEditing: Bool
     let isTemplate: Bool
@@ -165,6 +166,13 @@ struct ProviderEditView: View {
             .padding(.top, 20)
 
             if isEditing {
+                if let deleteErrorMessage {
+                    Text(deleteErrorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
+                        .padding(.top, 6)
+                }
+
                 Button("Make Active Provider") {
                     config.switchProvider(to: name)
                 }
@@ -225,6 +233,14 @@ struct ProviderEditView: View {
 
     private func deleteProvider() {
         guard let name = originalName else { return }
+        let blockers = config.presetsUsingProvider(name)
+        guard blockers.isEmpty else {
+            deleteErrorMessage =
+                "Cannot delete '\(name)'. It is used by preset(s): \(blockers.joined(separator: ", "))."
+            return
+        }
+
+        deleteErrorMessage = nil
         config.providers.removeValue(forKey: name)
         KeychainManager.delete(key: "\(name)_api_key")
         if config.activeProvider == name {

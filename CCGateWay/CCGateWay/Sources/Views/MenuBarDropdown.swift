@@ -62,7 +62,7 @@ struct MenuBarDropdown: View {
             Divider()
                 .opacity(0.5)
 
-            // Providers Section
+            // Presets Section
             VStack(alignment: .leading, spacing: 8) {
                 Text("QUICK SWITCH")
                     .font(.system(size: 10, weight: .bold))
@@ -72,14 +72,22 @@ struct MenuBarDropdown: View {
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 4) {
-                        ForEach(config.providers.keys.sorted(), id: \.self) { providerName in
-                            MenuProviderRow(
-                                name: providerName,
-                                isActive: config.activeProvider == providerName,
-                                cost: usageStore.todayRecord.providers[providerName]?.cost ?? 0
-                            ) {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                    config.switchProvider(to: providerName)
+                        if config.presets.isEmpty {
+                            Text("No presets yet")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 8)
+                        } else {
+                            ForEach(config.presets.keys.sorted(), id: \.self) { presetName in
+                                MenuPresetRow(
+                                    name: presetName,
+                                    isActive: config.activePreset == presetName
+                                ) {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        config.switchPreset(to: presetName)
+                                    }
                                 }
                             }
                         }
@@ -122,42 +130,31 @@ struct MenuBarDropdown: View {
     }
 }
 
-struct MenuProviderRow: View {
+struct MenuPresetRow: View {
     let name: String
     let isActive: Bool
-    let cost: Double
     let action: () -> Void
     @State private var isHovered = false
-
-    /// Use the template's properly-cased name if this provider matches one.
-    private var displayName: String {
-        ProviderConfig.templates
-            .first(where: { $0.name.lowercased() == name.lowercased() })?
-            .name ?? name
-    }
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                ProviderIconView(providerName: name, size: 16)
+                Image(systemName: "slider.horizontal.3")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(isActive ? .blue : .secondary)
                     .frame(width: 20, height: 20)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
                             .fill(
-                                isActive
-                                    ? ProviderConfig.providerIcon(for: name).color.opacity(0.15)
+                                isActive ? Color.blue.opacity(0.12)
                                     : Color(NSColor.controlBackgroundColor).opacity(0.5))
                     )
 
-                Text(displayName)
+                Text(name)
                     .font(.system(size: 13, weight: isActive ? .semibold : .medium))
                     .foregroundColor(isActive ? .primary : .primary.opacity(0.8))
 
                 Spacer()
-
-                Text(formatCost(cost))
-                    .font(.system(size: 11, weight: .medium, design: .monospaced))
-                    .foregroundColor(.secondary)
 
                 if isActive {
                     Image(systemName: "checkmark.circle.fill")

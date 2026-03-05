@@ -161,6 +161,17 @@ final class GatewayConfig: ObservableObject {
         activePreset = migratedName
     }
 
+    func presetsUsingProvider(_ providerName: String) -> [String] {
+        presets.values
+            .filter { preset in
+                preset.slots.values.contains {
+                    $0.providerName.caseInsensitiveCompare(providerName) == .orderedSame
+                }
+            }
+            .map(\.name)
+            .sorted()
+    }
+
     func activeSlotModels() -> (defaultModel: String, thinkModel: String, backgroundModel: String) {
         if let preset = activePresetConfig {
             let defaultModel =
