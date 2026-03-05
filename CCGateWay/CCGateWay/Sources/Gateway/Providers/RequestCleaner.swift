@@ -26,6 +26,13 @@ enum RequestCleaner {
     static func stripSchemaFromTools(from body: inout [String: Any]) {
         guard var tools = body["tools"] as? [[String: Any]] else { return }
         for i in tools.indices {
+            // Anthropic-style tool definition used before adapter conversion.
+            if var inputSchema = tools[i]["input_schema"] as? [String: Any] {
+                inputSchema.removeValue(forKey: "$schema")
+                tools[i]["input_schema"] = inputSchema
+            }
+
+            // OpenAI-style tool definition used after conversion.
             if var function = tools[i]["function"] as? [String: Any],
                 var parameters = function["parameters"] as? [String: Any]
             {

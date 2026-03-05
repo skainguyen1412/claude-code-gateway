@@ -43,7 +43,8 @@ struct OpenAIAdapterTests {
 
         // Body should have OpenAI format
         #expect(body["model"] as? String == "gpt-4o")
-        #expect(body["max_tokens"] as? Int == 100)
+        #expect(body["max_completion_tokens"] as? Int == 100)
+        #expect(body["max_tokens"] == nil)
         #expect(body["stream"] as? Bool == false)
 
         // Messages should be converted
