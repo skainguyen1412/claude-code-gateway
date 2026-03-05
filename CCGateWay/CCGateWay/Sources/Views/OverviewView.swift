@@ -127,13 +127,13 @@ struct OverviewView: View {
                     HStack {
                         Image(systemName: "slider.horizontal.3")
                             .foregroundColor(.purple)
-                        Text("Active Preset")
+                        Text("Routing Mode")
                             .font(.headline)
                     }
                     Divider()
 
                     if let activePreset = config.activePresetConfig {
-                        Text(activePreset.name)
+                        Text("Preset Mode: \(activePreset.name)")
                             .font(.title3)
                             .fontWeight(.semibold)
 
@@ -151,7 +151,10 @@ struct OverviewView: View {
                             }
                         }
                     } else {
-                        Text("No preset selected.")
+                        Text("Provider Mode")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                        Text("Using models from the active provider.")
                             .foregroundColor(.secondary)
                     }
                 }

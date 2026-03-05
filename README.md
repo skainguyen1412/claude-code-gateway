@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Use Claude Code with any LLM -- one click from your Mac menu bar.</strong><br>
-  Zero config &bull; Instant preset switching &bull; Local cost tracking
+  Zero config &bull; Instant provider switching &bull; Optional multi-provider presets
 </p>
 
 <p align="center">
@@ -23,13 +23,13 @@ Claude Code only speaks Anthropic's API. If you want to use it with Gemini, Open
 
 CCGateWay fixes that. It's a lightweight native macOS menu bar app that sits between Claude Code and your LLM provider. It translates requests and responses on the fly -- Claude Code sends its usual Anthropic-format calls, CCGateWay converts them into whatever format your provider expects (OpenAI, Gemini, etc.), gets the response, and converts it back to Anthropic format before returning it. Claude Code never knows the difference.
 
-**The result:** you can use Claude Code with any model from any provider, and switching presets is one click in the menu bar. No restarts, no config editing, no terminal commands.
+**The result:** you can use Claude Code with any model from any provider, switch providers in one click, and optionally activate a custom preset for multi-provider slot routing. No restarts, no config editing, no terminal commands.
 
 ### Dead simple to set up
 
 1. `brew install --cask ccgateway` -- installs to your menu bar
-2. Add providers + create a preset that maps your slots
-3. Activate a preset. CCGateWay auto-configures Claude Code
+2. Add a provider (paste API key, pick models)
+3. Optional: create a custom preset for multi-provider slot mapping
 
 No Node. No Python. No Docker. No YAML files. Just a native Mac app that works.
 
@@ -66,7 +66,10 @@ CCGateWay runs a local server on `127.0.0.1` that exposes Anthropic-compatible e
 
 ### Slot-Based Routing
 
-Claude Code uses different model names for different tasks (e.g. "haiku" for background work, "opus" for deeper reasoning). CCGateWay intercepts the model string, maps it to a **slot**, and routes to the provider/model pair configured for that slot on the active preset.
+Claude Code uses different model names for different tasks (e.g. "haiku" for background work, "opus" for deeper reasoning). CCGateWay intercepts the model string, maps it to a **slot**, and routes by:
+
+- active provider slots (default flow), or
+- active custom preset slot mappings (optional multi-provider mode)
 
 | Slot | When Claude Code uses it |
 |------|--------------------------|
@@ -77,8 +80,8 @@ Claude Code uses different model names for different tasks (e.g. "haiku" for bac
 
 ## Features
 
-- **Menu bar quick switch** -- change active preset without leaving your editor
-- **Dashboard** -- configure providers, build presets, assign slot mappings, view usage
+- **Menu bar quick switch** -- switch providers, or optionally activate preset mode
+- **Dashboard** -- configure providers, build optional presets, assign slot mappings, view usage
 - **Anthropic-compatible gateway** -- drop-in replacement, streaming + non-streaming
 - **Provider adapters** -- Gemini native + OpenAI-compatible (OpenAI, OpenRouter, DeepSeek, Groq, custom)
 - **Tool / function calling** -- passthrough for OpenAI-compatible providers
@@ -143,7 +146,7 @@ The app installs in the menu bar. Open the dashboard from the dropdown.
 
 ## Setup
 
-### 1. Add Providers
+### 1. Add a Provider
 
 1. Open **Dashboard** > **Providers**
 2. Pick a template (Gemini, OpenAI, OpenRouter, DeepSeek, Groq) or enter a custom endpoint
@@ -151,22 +154,23 @@ The app installs in the menu bar. Open the dashboard from the dropdown.
 4. Assign models to each slot (`default` / `background` / `think` / `longContext`)
 5. **Test Connection**, then **Save**
 
-### 2. Create a Preset
+### 2. Activate Provider Mode (Default)
+
+Use the menu bar quick switch or click **Make Active Provider** in the Providers dashboard.
+
+### 3. Optional: Create and Activate a Custom Preset
 
 1. Open **Dashboard** > **Presets**
 2. Add a preset and map each slot to a provider + model
-3. Save the preset (each referenced provider must have a valid API key)
-
-### 3. Activate
-
-Use the menu bar quick switch or click **Make Active** in the Presets dashboard.
+3. Save, then click **Make Active** (or switch from the menu bar)
+4. Switch back to **Provider Mode** anytime from quick switch
 
 ### 4. Claude Code Auto-Sync
 
-CCGateWay automatically writes to `~/.claude/settings.json` when you switch presets, setting:
+CCGateWay automatically writes to `~/.claude/settings.json` when you switch providers or presets, setting:
 
 - `ANTHROPIC_BASE_URL` to `http://127.0.0.1:<port>`
-- `ANTHROPIC_MODEL` and slot env vars to the active preset's slot models
+- `ANTHROPIC_MODEL` and slot env vars to the active routing mode's slot models
 
 To revert: **Settings** > **Reset Claude Code Settings** (removes CCGateWay-injected env vars).
 

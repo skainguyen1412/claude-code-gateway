@@ -52,7 +52,7 @@ struct GatewayConfigPresetMigrationTests {
 
         config.migrateProvidersToPresetsIfNeeded()
 
-        #expect(!config.activePreset.isEmpty)
-        #expect(config.presets[config.activePreset] != nil)
+        #expect(config.presets["Migrated Preset"] != nil)
+        #expect(config.activePreset.isEmpty)
     }
 }

@@ -132,6 +132,7 @@ final class GatewayConfig: ObservableObject {
     func switchProvider(to name: String) {
         guard providers[name] != nil else { return }
         activeProvider = name
+        activePreset = ""
         save()
         syncWithClaudeCode()
     }
@@ -139,6 +140,13 @@ final class GatewayConfig: ObservableObject {
     func switchPreset(to name: String) {
         guard presets[name] != nil else { return }
         activePreset = name
+        save()
+        syncWithClaudeCode()
+    }
+
+    func disablePresetMode() {
+        guard !activePreset.isEmpty else { return }
+        activePreset = ""
         save()
         syncWithClaudeCode()
     }
@@ -158,7 +166,8 @@ final class GatewayConfig: ObservableObject {
         )
 
         presets[migratedName] = migrated
-        activePreset = migratedName
+        // Keep provider mode as default after migration.
+        activePreset = ""
     }
 
     func presetsUsingProvider(_ providerName: String) -> [String] {

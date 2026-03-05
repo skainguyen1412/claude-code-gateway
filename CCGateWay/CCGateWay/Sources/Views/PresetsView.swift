@@ -126,9 +126,6 @@ struct PresetsView: View {
         }
 
         config.presets[normalizedName] = updated
-        if config.activePreset.isEmpty {
-            config.activePreset = normalizedName
-        }
         config.save()
         if config.activePreset == normalizedName {
             config.syncWithClaudeCode()
@@ -143,7 +140,7 @@ struct PresetsView: View {
         config.presets.removeValue(forKey: name)
 
         if wasActive {
-            config.activePreset = config.presets.keys.sorted().first ?? ""
+            config.activePreset = ""
             config.syncWithClaudeCode()
         }
 

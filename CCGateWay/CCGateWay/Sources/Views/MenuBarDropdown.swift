@@ -62,7 +62,7 @@ struct MenuBarDropdown: View {
             Divider()
                 .opacity(0.5)
 
-            // Presets Section
+            // Quick Switch
             VStack(alignment: .leading, spacing: 8) {
                 Text("QUICK SWITCH")
                     .font(.system(size: 10, weight: .bold))
@@ -72,17 +72,65 @@ struct MenuBarDropdown: View {
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 4) {
-                        if config.presets.isEmpty {
-                            Text("No presets yet")
+                        Text("Providers")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 10)
+                            .padding(.top, 4)
+
+                        if config.providers.isEmpty {
+                            Text("No providers yet")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(.secondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 8)
                         } else {
+                            ForEach(config.providers.keys.sorted(), id: \.self) { providerName in
+                                MenuProviderRow(
+                                    name: providerName,
+                                    isActive: config.activeProvider == providerName && config.activePreset.isEmpty,
+                                    cost: usageStore.todayRecord.providers[providerName]?.cost ?? 0
+                                ) {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        config.switchProvider(to: providerName)
+                                    }
+                                }
+                            }
+                        }
+
+                        Divider()
+                            .padding(.vertical, 6)
+
+                        Text("Multi-Provider Presets")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 10)
+
+                        MenuPresetRow(
+                            name: "Provider Mode",
+                            icon: "network",
+                            isActive: config.activePreset.isEmpty
+                        ) {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                config.disablePresetMode()
+                            }
+                        }
+
+                        if config.presets.isEmpty {
+                            Text("No custom presets yet")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 4)
+                        } else {
                             ForEach(config.presets.keys.sorted(), id: \.self) { presetName in
                                 MenuPresetRow(
                                     name: presetName,
+                                    icon: "slider.horizontal.3",
                                     isActive: config.activePreset == presetName
                                 ) {
                                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
@@ -95,7 +143,7 @@ struct MenuBarDropdown: View {
                     .padding(.horizontal, 12)
                     .padding(.bottom, 12)
                 }
-                .frame(maxHeight: 220)
+                .frame(maxHeight: 300)
             }
 
             Divider()
@@ -130,8 +178,77 @@ struct MenuBarDropdown: View {
     }
 }
 
+struct MenuProviderRow: View {
+    let name: String
+    let isActive: Bool
+    let cost: Double
+    let action: () -> Void
+    @State private var isHovered = false
+
+    private var displayName: String {
+        ProviderConfig.templates
+            .first(where: { $0.name.lowercased() == name.lowercased() })?
+            .name ?? name
+    }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                ProviderIconView(providerName: name, size: 16)
+                    .frame(width: 20, height: 20)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(
+                                isActive
+                                    ? ProviderConfig.providerIcon(for: name).color.opacity(0.15)
+                                    : Color(NSColor.controlBackgroundColor).opacity(0.5))
+                    )
+
+                Text(displayName)
+                    .font(.system(size: 13, weight: isActive ? .semibold : .medium))
+                    .foregroundColor(isActive ? .primary : .primary.opacity(0.8))
+
+                Spacer()
+
+                Text(formatCost(cost))
+                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .foregroundColor(.secondary)
+
+                if isActive {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 14))
+                }
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(
+                        isActive
+                            ? Color.blue.opacity(0.08)
+                            : (isHovered ? Color(NSColor.quaternaryLabelColor) : Color.clear))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(
+                        isActive
+                            ? Color.blue.opacity(0.3)
+                            : (isHovered ? Color(NSColor.gridColor) : Color.clear), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
+        }
+    }
+}
+
 struct MenuPresetRow: View {
     let name: String
+    let icon: String
     let isActive: Bool
     let action: () -> Void
     @State private var isHovered = false
@@ -139,7 +256,7 @@ struct MenuPresetRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Image(systemName: "slider.horizontal.3")
+                Image(systemName: icon)
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(isActive ? .blue : .secondary)
                     .frame(width: 20, height: 20)
