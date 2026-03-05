@@ -72,3 +72,55 @@ jobs:
             `${{ env.SHA256 }}`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Homebrew Tap
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          # Extract version from tag (remove 'v' prefix)
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "Updating homebrew-tap to version $VERSION with SHA256 $SHA256"
+
+          git clone https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/skainguyen1412/homebrew-tap.git /tmp/homebrew-tap
+
+          cat > /tmp/homebrew-tap/Casks/ccgateway.rb << 'CASK_EOF'
+          cask "ccgateway" do
+            version "VERSION_PLACEHOLDER"
+            sha256 "SHA256_PLACEHOLDER"
+
+            url "https://github.com/skainguyen1412/claude-code-gateway/releases/download/v#{version}/CCGateWay.zip"
+            name "CCGateWay"
+            desc "Use Claude Code with any LLM — one click from your Mac menu bar"
+            homepage "https://github.com/skainguyen1412/claude-code-gateway"
+
+            depends_on macos: ">= :sonoma"
+
+            postflight do
+              system "xattr", "-d", "com.apple.quarantine", "#{appdir}/CCGateWay.app"
+            end
+
+            app "CCGateWay.app"
+
+            zap trash: [
+              "~/Library/Application Support/CCGateWay",
+              "~/.ccgateway",
+            ]
+          end
+          CASK_EOF
+
+          # Replace placeholders with actual values
+          sed -i '' "s/VERSION_PLACEHOLDER/$VERSION/g" /tmp/homebrew-tap/Casks/ccgateway.rb
+          sed -i '' "s/SHA256_PLACEHOLDER/$SHA256/g" /tmp/homebrew-tap/Casks/ccgateway.rb
+
+          # Fix indentation (heredoc adds extra spaces)
+          sed -i '' 's/^          //' /tmp/homebrew-tap/Casks/ccgateway.rb
+
+          echo "--- Generated cask file ---"
+          cat /tmp/homebrew-tap/Casks/ccgateway.rb
+
+          cd /tmp/homebrew-tap
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Casks/ccgateway.rb
+          git commit -m "Update CCGateWay to v$VERSION"
+          git push
