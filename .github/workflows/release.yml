@@ -1,0 +1,68 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Tuist
+        run: |
+          curl -Ls https://install.tuist.io | bash
+
+      - name: Generate Xcode Project
+        working-directory: CCGateWay
+        run: tuist generate
+
+      - name: Build Release
+        working-directory: CCGateWay
+        run: |
+          xcodebuild -workspace CCGateWay.xcworkspace \
+            -scheme CCGateWay \
+            -configuration Release \
+            -derivedDataPath ./build \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Package App
+        working-directory: CCGateWay
+        run: |
+          APP_PATH=$(find ./build/Build/Products/Release -name "CCGateWay.app" -type d | head -1)
+          echo "Found app at: $APP_PATH"
+          
+          mkdir -p ./release
+          cp -R "$APP_PATH" ./release/
+          cd release
+          zip -r ../CCGateWay.zip "CCGateWay.app"
+          cd ..
+          
+          # Generate SHA256
+          shasum -a 256 CCGateWay.zip | tee sha256.txt
+          echo "SHA256=$(shasum -a 256 CCGateWay.zip | awk '{print $1}')" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            CCGateWay/CCGateWay.zip
+            CCGateWay/sha256.txt
+          body: |
+            ## CCGateWay ${{ github.ref_name }}
+            
+            ### Install via Homebrew
+            ```bash
+            brew tap skainguyen1412/tap
+            brew install --cask ccgateway
+            ```
+            
+            ### SHA256
+            `${{ env.SHA256 }}`
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
