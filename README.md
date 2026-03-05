@@ -27,7 +27,7 @@ CCGateWay fixes that. It's a lightweight native macOS menu bar app that sits bet
 
 ### Dead simple to set up
 
-1. Build and run the app -- it lives in your menu bar
+1. `brew install --cask ccgateway` -- installs to your menu bar
 2. Add a provider (paste your API key, pick your models)
 3. Done. CCGateWay auto-configures Claude Code for you
 
@@ -86,7 +86,38 @@ Claude Code uses different model names for different tasks (e.g. "haiku" for bac
 - **Keychain storage** -- API keys never leave macOS Keychain
 - **Local cost tracking** -- usage + cost history persisted on disk
 
-## Requirements
+## Install
+
+### Homebrew (recommended)
+
+```bash
+brew tap skainguyen1412/tap
+brew install --cask ccgateway
+```
+
+That's it. Launch **CCGateWay** from your Applications folder — it lives in the menu bar.
+
+### Manual download
+
+1. Download `CCGateWay.zip` from the [latest release](https://github.com/skainguyen1412/claude-code-gateway/releases/latest)
+2. Unzip and drag `CCGateWay.app` into your **Applications** folder
+3. Open the app
+
+> **⚠️ Note:** CCGateWay is not signed with an Apple Developer ID or notarized. macOS will block it on first launch. To allow it:
+>
+> - **Option A:** Right-click the app → **Open** → click **Open** in the dialog
+> - **Option B:** Go to **System Settings** → **Privacy & Security** → scroll down and click **Open Anyway**
+> - **Option C:** Remove the quarantine flag manually:
+>   ```bash
+>   xattr -d com.apple.quarantine /Applications/CCGateWay.app
+>   ```
+>
+> The Homebrew install handles this automatically.
+
+### Build from source
+
+<details>
+<summary>Requirements & instructions</summary>
 
 | Dependency | Version |
 |------------|---------|
@@ -94,18 +125,19 @@ Claude Code uses different model names for different tasks (e.g. "haiku" for bac
 | Xcode | Swift 6 toolchain |
 | [Tuist](https://tuist.io) | Latest |
 
-## Build & Run
-
 ```bash
 git clone https://github.com/skainguyen1412/claude-code-gateway.git
 cd claude-code-gateway/CCGateWay
 
-# Generate the Xcode workspace
+# Install dependencies & generate the Xcode workspace
+tuist install
 tuist generate
 
 # Open in Xcode and run the CCGateWay scheme
 open CCGateWay.xcworkspace
 ```
+
+</details>
 
 The app installs in the menu bar. Open the dashboard from the dropdown.
 
