@@ -18,6 +18,10 @@ jobs:
       - name: Install Tuist
         run: mise install tuist
       
+      - name: Install Dependencies
+        working-directory: CCGateWay
+        run: mise exec -- tuist install
+
       - name: Generate Xcode Project
         working-directory: CCGateWay
         run: mise exec -- tuist generate
