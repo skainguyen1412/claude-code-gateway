@@ -2,7 +2,7 @@ import Foundation
 import Testing
 @testable import CCGateWay
 
-@Suite("Gateway Config Preset Migration")
+@Suite("Gateway Config Optional Presets")
 struct GatewayConfigPresetMigrationTests {
     @Test("legacy payload decodes with default preset fields")
     func legacyDecodeDefaults() throws {
@@ -28,8 +28,8 @@ struct GatewayConfigPresetMigrationTests {
         #expect(config.activePreset.isEmpty)
     }
 
-    @Test("migration creates preset from active provider slots")
-    func migrationBuildsPreset() {
+    @Test("deleting all presets stays deleted after reload")
+    func deletedPresetsDoNotReappearAfterReload() throws {
         let config = GatewayConfig(
             activeProvider: "OpenAI",
             port: 3456,
@@ -47,12 +47,25 @@ struct GatewayConfigPresetMigrationTests {
                     enabled: true
                 )
             ],
+            presets: [
+                "Mixed": PresetConfig(
+                    name: "Mixed",
+                    slots: [
+                        "default": .init(providerName: "OpenAI", modelId: "gpt-5")
+                    ]
+                )
+            ],
+            activePreset: "Mixed",
             autoStartOnLogin: false
         )
 
-        config.migrateProvidersToPresetsIfNeeded()
+        config.presets.removeAll()
+        config.activePreset = ""
 
-        #expect(config.presets["Migrated Preset"] != nil)
-        #expect(config.activePreset.isEmpty)
+        let persisted = try config.encodeForTests()
+        let reloaded = try GatewayConfig.decodeFromDataForTests(persisted)
+
+        #expect(reloaded.presets.isEmpty)
+        #expect(reloaded.activePreset.isEmpty)
     }
 }

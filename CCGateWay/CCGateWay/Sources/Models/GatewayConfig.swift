@@ -99,7 +99,6 @@ final class GatewayConfig: ObservableObject {
             activePreset: storage.activePreset,
             autoStartOnLogin: storage.autoStartOnLogin
         )
-        config.migrateProvidersToPresetsIfNeeded()
         return config
     }
 
@@ -149,25 +148,6 @@ final class GatewayConfig: ObservableObject {
         activePreset = ""
         save()
         syncWithClaudeCode()
-    }
-
-    func migrateProvidersToPresetsIfNeeded() {
-        guard presets.isEmpty, let active = providers[activeProvider] else { return }
-
-        let migratedName = "Migrated Preset"
-        let migrated = PresetConfig(
-            name: migratedName,
-            slots: [
-                "default": .init(providerName: active.name, modelId: active.slots["default"] ?? ""),
-                "background": .init(providerName: active.name, modelId: active.slots["background"] ?? ""),
-                "think": .init(providerName: active.name, modelId: active.slots["think"] ?? ""),
-                "longContext": .init(providerName: active.name, modelId: active.slots["longContext"] ?? ""),
-            ]
-        )
-
-        presets[migratedName] = migrated
-        // Keep provider mode as default after migration.
-        activePreset = ""
     }
 
     func presetsUsingProvider(_ providerName: String) -> [String] {
@@ -342,6 +322,18 @@ extension GatewayConfig {
 
     func buildClaudeEnvForTests(existingEnv: [String: Any]) -> [String: Any] {
         buildClaudeEnv(existingEnv: existingEnv)
+    }
+
+    func encodeForTests() throws -> Data {
+        let storage = StorageModel(
+            activeProvider: activeProvider,
+            port: port,
+            providers: providers,
+            presets: presets,
+            activePreset: activePreset,
+            autoStartOnLogin: autoStartOnLogin
+        )
+        return try JSONEncoder().encode(storage)
     }
 }
 #endif
