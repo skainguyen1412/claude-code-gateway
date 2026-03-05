@@ -172,7 +172,7 @@ private struct PresetRow: View {
     }
 }
 
-private struct PresetEditView: View {
+struct PresetEditView: View {
     let preset: PresetConfig?
     let providerNames: [String]
     let activePresetName: String

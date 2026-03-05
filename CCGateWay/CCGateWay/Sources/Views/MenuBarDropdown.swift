@@ -1,14 +1,31 @@
 import SwiftUI
 
+private enum QuickSwitchItem: Identifiable {
+    case provider(String)
+    case preset(String)
+
+    var id: String {
+        switch self {
+        case .provider(let name): return "provider_\(name)"
+        case .preset(let name): return "preset_\(name)"
+        }
+    }
+}
+
 struct MenuBarDropdown: View {
     @EnvironmentObject var config: GatewayConfig
     @EnvironmentObject var server: GatewayServer
     @EnvironmentObject var usageStore: UsageStore
     @Environment(\.openWindow) private var openWindow
 
+    private var quickSwitchItems: [QuickSwitchItem] {
+        let providers = config.providers.keys.sorted().map { QuickSwitchItem.provider($0) }
+        let presets = config.presets.keys.sorted().map { QuickSwitchItem.preset($0) }
+        return providers + presets
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            // Header: Status and Cost
             HStack(alignment: .center) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("CCGateWay")
@@ -21,7 +38,6 @@ struct MenuBarDropdown: View {
 
                 Spacer()
 
-                // Status Indicator
                 Button(action: {
                     if server.isRunning {
                         server.stop()
@@ -62,7 +78,6 @@ struct MenuBarDropdown: View {
             Divider()
                 .opacity(0.5)
 
-            // Quick Switch
             VStack(alignment: .leading, spacing: 8) {
                 Text("QUICK SWITCH")
                     .font(.system(size: 10, weight: .bold))
@@ -72,69 +87,42 @@ struct MenuBarDropdown: View {
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 4) {
-                        Text("Providers")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 10)
-                            .padding(.top, 4)
-
-                        if config.providers.isEmpty {
-                            Text("No providers yet")
+                        if quickSwitchItems.isEmpty {
+                            Text("No providers or presets yet")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(.secondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 8)
                         } else {
-                            ForEach(config.providers.keys.sorted(), id: \.self) { providerName in
-                                MenuProviderRow(
-                                    name: providerName,
-                                    isActive: config.activeProvider == providerName && config.activePreset.isEmpty,
-                                    cost: usageStore.todayRecord.providers[providerName]?.cost ?? 0
-                                ) {
-                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                        config.switchProvider(to: providerName)
+                            ForEach(quickSwitchItems) { item in
+                                switch item {
+                                case .provider(let providerName):
+                                    MenuQuickSwitchRow(
+                                        name: providerName,
+                                        kindLabel: "Provider",
+                                        icon: ProviderConfig.providerIcon(for: providerName).sfSymbol,
+                                        isActive: config.activePreset.isEmpty
+                                            && config.activeProvider == providerName,
+                                        trailing: formatCost(
+                                            usageStore.todayRecord.providers[providerName]?.cost ?? 0
+                                        )
+                                    ) {
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                            config.switchProvider(to: providerName)
+                                        }
                                     }
-                                }
-                            }
-                        }
-
-                        Divider()
-                            .padding(.vertical, 6)
-
-                        Text("Multi-Provider Presets")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 10)
-
-                        MenuPresetRow(
-                            name: "Provider Mode",
-                            icon: "network",
-                            isActive: config.activePreset.isEmpty
-                        ) {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                config.disablePresetMode()
-                            }
-                        }
-
-                        if config.presets.isEmpty {
-                            Text("No custom presets yet")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(.secondary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 4)
-                        } else {
-                            ForEach(config.presets.keys.sorted(), id: \.self) { presetName in
-                                MenuPresetRow(
-                                    name: presetName,
-                                    icon: "slider.horizontal.3",
-                                    isActive: config.activePreset == presetName
-                                ) {
-                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                        config.switchPreset(to: presetName)
+                                case .preset(let presetName):
+                                    MenuQuickSwitchRow(
+                                        name: presetName,
+                                        kindLabel: "Preset",
+                                        icon: "slider.horizontal.3",
+                                        isActive: config.activePreset == presetName,
+                                        trailing: nil
+                                    ) {
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                            config.switchPreset(to: presetName)
+                                        }
                                     }
                                 }
                             }
@@ -143,13 +131,12 @@ struct MenuBarDropdown: View {
                     .padding(.horizontal, 12)
                     .padding(.bottom, 12)
                 }
-                .frame(maxHeight: 300)
+                .frame(maxHeight: 280)
             }
 
             Divider()
                 .opacity(0.5)
 
-            // Footer Actions
             HStack(spacing: 12) {
                 Button(action: {
                     NSApp.activate(ignoringOtherApps: true)
@@ -174,82 +161,16 @@ struct MenuBarDropdown: View {
             .padding(12)
             .background(Color(NSColor.controlBackgroundColor).opacity(0.3))
         }
-        .frame(width: 280)
+        .frame(width: 300)
     }
 }
 
-struct MenuProviderRow: View {
+private struct MenuQuickSwitchRow: View {
     let name: String
-    let isActive: Bool
-    let cost: Double
-    let action: () -> Void
-    @State private var isHovered = false
-
-    private var displayName: String {
-        ProviderConfig.templates
-            .first(where: { $0.name.lowercased() == name.lowercased() })?
-            .name ?? name
-    }
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                ProviderIconView(providerName: name, size: 16)
-                    .frame(width: 20, height: 20)
-                    .background(
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(
-                                isActive
-                                    ? ProviderConfig.providerIcon(for: name).color.opacity(0.15)
-                                    : Color(NSColor.controlBackgroundColor).opacity(0.5))
-                    )
-
-                Text(displayName)
-                    .font(.system(size: 13, weight: isActive ? .semibold : .medium))
-                    .foregroundColor(isActive ? .primary : .primary.opacity(0.8))
-
-                Spacer()
-
-                Text(formatCost(cost))
-                    .font(.system(size: 11, weight: .medium, design: .monospaced))
-                    .foregroundColor(.secondary)
-
-                if isActive {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.blue)
-                        .font(.system(size: 14))
-                }
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(
-                        isActive
-                            ? Color.blue.opacity(0.08)
-                            : (isHovered ? Color(NSColor.quaternaryLabelColor) : Color.clear))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(
-                        isActive
-                            ? Color.blue.opacity(0.3)
-                            : (isHovered ? Color(NSColor.gridColor) : Color.clear), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.15)) {
-                isHovered = hovering
-            }
-        }
-    }
-}
-
-struct MenuPresetRow: View {
-    let name: String
+    let kindLabel: String
     let icon: String
     let isActive: Bool
+    let trailing: String?
     let action: () -> Void
     @State private var isHovered = false
 
@@ -267,11 +188,22 @@ struct MenuPresetRow: View {
                                     : Color(NSColor.controlBackgroundColor).opacity(0.5))
                     )
 
-                Text(name)
-                    .font(.system(size: 13, weight: isActive ? .semibold : .medium))
-                    .foregroundColor(isActive ? .primary : .primary.opacity(0.8))
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(name)
+                        .font(.system(size: 13, weight: isActive ? .semibold : .medium))
+                        .foregroundColor(isActive ? .primary : .primary.opacity(0.8))
+                    Text(kindLabel)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
 
                 Spacer()
+
+                if let trailing {
+                    Text(trailing)
+                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        .foregroundColor(.secondary)
+                }
 
                 if isActive {
                     Image(systemName: "checkmark.circle.fill")

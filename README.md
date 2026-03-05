@@ -81,7 +81,7 @@ Claude Code uses different model names for different tasks (e.g. "haiku" for bac
 ## Features
 
 - **Menu bar quick switch** -- switch providers, or optionally activate preset mode
-- **Dashboard** -- configure providers, build optional presets, assign slot mappings, view usage
+- **Dashboard** -- configure providers and optional presets from one Providers menu
 - **Anthropic-compatible gateway** -- drop-in replacement, streaming + non-streaming
 - **Provider adapters** -- Gemini native + OpenAI-compatible (OpenAI, OpenRouter, DeepSeek, Groq, custom)
 - **Tool / function calling** -- passthrough for OpenAI-compatible providers
@@ -160,10 +160,10 @@ Use the menu bar quick switch or click **Make Active Provider** in the Providers
 
 ### 3. Optional: Create and Activate a Custom Preset
 
-1. Open **Dashboard** > **Presets**
-2. Add a preset and map each slot to a provider + model
-3. Save, then click **Make Active** (or switch from the menu bar)
-4. Switch back to **Provider Mode** anytime from quick switch
+1. Open **Dashboard** > **Providers**
+2. Click `+` and choose **Add Preset**
+3. Map each slot to a provider + model and save
+4. Activate it like a normal switch target (same quick switch list as providers)
 
 ### 4. Claude Code Auto-Sync
 
