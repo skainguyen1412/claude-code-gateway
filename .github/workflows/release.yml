@@ -12,13 +12,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Tuist
-        run: |
-          curl -Ls https://install.tuist.io | bash
+      - name: Install Mise
+        uses: jdx/mise-action@v2
 
+      - name: Install Tuist
+        run: mise install tuist
+      
       - name: Generate Xcode Project
         working-directory: CCGateWay
-        run: tuist generate
+        run: mise exec -- tuist generate
 
       - name: Build Release
         working-directory: CCGateWay
