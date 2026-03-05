@@ -101,14 +101,17 @@ struct MenuBarDropdown: View {
                                     MenuQuickSwitchRow(
                                         name: providerName,
                                         kindLabel: "Provider",
-                                        icon: ProviderConfig.providerIcon(for: providerName).sfSymbol,
+                                        icon: ProviderConfig.providerIcon(for: providerName)
+                                            .sfSymbol,
                                         isActive: config.activePreset.isEmpty
                                             && config.activeProvider == providerName,
                                         trailing: formatCost(
-                                            usageStore.todayRecord.providers[providerName]?.cost ?? 0
+                                            usageStore.todayRecord.providers[providerName]?.cost
+                                                ?? 0
                                         )
                                     ) {
-                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7))
+                                        {
                                             config.switchProvider(to: providerName)
                                         }
                                     }
@@ -120,7 +123,8 @@ struct MenuBarDropdown: View {
                                         isActive: config.activePreset == presetName,
                                         trailing: nil
                                     ) {
-                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7))
+                                        {
                                             config.switchPreset(to: presetName)
                                         }
                                     }
@@ -131,7 +135,7 @@ struct MenuBarDropdown: View {
                     .padding(.horizontal, 12)
                     .padding(.bottom, 12)
                 }
-                .frame(maxHeight: 280)
+                .fixedSize(horizontal: false, vertical: true)
             }
 
             Divider()
@@ -184,7 +188,8 @@ private struct MenuQuickSwitchRow: View {
                     .background(
                         RoundedRectangle(cornerRadius: 6)
                             .fill(
-                                isActive ? Color.blue.opacity(0.12)
+                                isActive
+                                    ? Color.blue.opacity(0.12)
                                     : Color(NSColor.controlBackgroundColor).opacity(0.5))
                     )
 
