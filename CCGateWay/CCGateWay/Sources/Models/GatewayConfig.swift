@@ -161,6 +161,41 @@ final class GatewayConfig: ObservableObject {
         activePreset = migratedName
     }
 
+    func activeSlotModels() -> (defaultModel: String, thinkModel: String, backgroundModel: String) {
+        if let preset = activePresetConfig {
+            let defaultModel =
+                preset.slots["default"]?.modelId
+                ?? activeProviderConfig?.slots["default"]
+                ?? "unknown_model"
+            let thinkModel = preset.slots["think"]?.modelId ?? defaultModel
+            let backgroundModel = preset.slots["background"]?.modelId ?? defaultModel
+            return (defaultModel, thinkModel, backgroundModel)
+        }
+
+        let defaultModel = activeProviderConfig?.slots["default"] ?? "unknown_model"
+        return (
+            defaultModel,
+            activeProviderConfig?.slots["think"] ?? defaultModel,
+            activeProviderConfig?.slots["background"] ?? defaultModel
+        )
+    }
+
+    func buildClaudeEnv(existingEnv: [String: Any]) -> [String: Any] {
+        var envDict = existingEnv
+        let models = activeSlotModels()
+
+        // Update configurations native Oh My OpenCode wrapper requires.
+        envDict["ANTHROPIC_AUTH_TOKEN"] = "dummy_key_gateway"
+        envDict["ANTHROPIC_BASE_URL"] = "http://127.0.0.1:\(port)"
+        envDict["ANTHROPIC_MODEL"] = models.defaultModel
+        envDict["ANTHROPIC_DEFAULT_OPUS_MODEL"] = models.thinkModel
+        envDict["ANTHROPIC_DEFAULT_SONNET_MODEL"] = models.defaultModel
+        envDict["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = models.backgroundModel
+        envDict["CLAUDE_CODE_SUBAGENT_MODEL"] = models.backgroundModel
+
+        return envDict
+    }
+
     // MARK: - Auto-Sync
 
     public func syncWithClaudeCode() {
@@ -189,20 +224,8 @@ final class GatewayConfig: ObservableObject {
                 }
 
                 // Ensure "env" dictionary exists
-                var envDict = jsonDict["env"] as? [String: Any] ?? [:]
-
-                let defaultModel = activeProviderConfig?.slots["default"] ?? "unknown_model"
-                let opusModel = activeProviderConfig?.slots["think"] ?? defaultModel
-                let haikuModel = activeProviderConfig?.slots["background"] ?? defaultModel
-
-                // Update configurations native Oh My OpenCode wrapper requires
-                envDict["ANTHROPIC_AUTH_TOKEN"] = "dummy_key_gateway"
-                envDict["ANTHROPIC_BASE_URL"] = "http://127.0.0.1:\(port)"
-                envDict["ANTHROPIC_MODEL"] = defaultModel
-                envDict["ANTHROPIC_DEFAULT_OPUS_MODEL"] = opusModel
-                envDict["ANTHROPIC_DEFAULT_SONNET_MODEL"] = defaultModel
-                envDict["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = haikuModel
-                envDict["CLAUDE_CODE_SUBAGENT_MODEL"] = haikuModel
+                let existingEnv = jsonDict["env"] as? [String: Any] ?? [:]
+                let envDict = buildClaudeEnv(existingEnv: existingEnv)
 
                 jsonDict["env"] = envDict
 
@@ -273,6 +296,10 @@ extension GatewayConfig {
             activePreset: storage.activePreset,
             autoStartOnLogin: storage.autoStartOnLogin
         )
+    }
+
+    func buildClaudeEnvForTests(existingEnv: [String: Any]) -> [String: Any] {
+        buildClaudeEnv(existingEnv: existingEnv)
     }
 }
 #endif
