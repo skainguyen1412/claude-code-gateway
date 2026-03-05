@@ -16,29 +16,32 @@ enum SlotRouter {
         ("claude-3-opus", "think"),
     ]
 
-    /// Resolve an incoming Anthropic model name to (slot, providerModel)
+    /// Resolve an incoming Anthropic model name to a canonical slot.
+    static func resolveSlot(requestedModel: String) -> String {
+        // Check for partial/prefix match (model names have version suffixes like -20241022)
+        for (pattern, slot) in anthropicModelToSlot {
+            if requestedModel.contains(pattern) { return slot }
+        }
+
+        // Check if the model name contains "thinking" -> think slot
+        if requestedModel.contains("thinking") || requestedModel.contains("think") {
+            return "think"
+        }
+
+        // Fallback to default slot
+        return "default"
+    }
+
+    /// Backward-compatible helper used by existing provider-slot routing.
     static func resolve(
         requestedModel: String,
         provider: ProviderConfig
     ) -> (slot: String, providerModel: String) {
-        // Check for partial/prefix match (model names have version suffixes like -20241022)
-        for (pattern, slot) in anthropicModelToSlot {
-            if requestedModel.contains(pattern),
-                let model = provider.slots[slot]
-            {
-                return (slot, model)
-            }
+        let slot = resolveSlot(requestedModel: requestedModel)
+        if let model = provider.slots[slot] {
+            return (slot, model)
         }
-
-        // Check if the model name contains "thinking" -> think slot
-        if requestedModel.contains("thinking") || requestedModel.contains("think"),
-            let model = provider.slots["think"]
-        {
-            return ("think", model)
-        }
-
-        // Fallback to default slot
-        let model = provider.slots["default"] ?? provider.slots.values.first ?? requestedModel
-        return ("default", model)
+        let fallback = provider.slots["default"] ?? provider.slots.values.first ?? requestedModel
+        return (slot, fallback)
     }
 }
