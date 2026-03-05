@@ -1,6 +1,4 @@
-| Task | Status |
-|---|---|
-| Task 1: Create GitHub Actions Release Workflow | pending |
-| Task 2: Automate Tap Update inside the Workflow | pending |
-| Task 3: Initialize the Cask locally in the tap repository | pending |
-| Task 4: Update README with Homebrew Instructions | pending |
+| Task | Description | Status |
+|---|---|---|
+| 1 | Update ProviderListItem and ProvidersView to handle a Draft state | in_progress |
+| 2 | Fix ProviderEditView to support Creating New Providers | not_started |
