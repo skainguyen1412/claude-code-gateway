@@ -15,6 +15,8 @@
   <a href="#build--run"><img src="https://img.shields.io/badge/build-Tuist-blue?style=flat-square" alt="Tuist"></a>
 </p>
 
+> **Is this legal?** Yes. CCGateWay uses your own API keys through official public APIs -- no subscriptions or access controls are bypassed. You will not be banned. Feel free to use it!
+
 ---
 
 ## What is CCGateWay?
