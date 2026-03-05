@@ -37,7 +37,30 @@ jobs:
             -derivedDataPath ./build \
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_STYLE=Manual \
             build
+
+      - name: Re-sign App Bundle
+        working-directory: CCGateWay
+        run: |
+          APP_PATH=$(find ./build/Build/Products/Release -name "CCGateWay.app" -type d | head -1)
+          echo "Found app at: $APP_PATH"
+
+          # Re-sign all embedded frameworks first, then the main app
+          # This ensures all binaries share the same ad-hoc identity (no Team ID mismatch)
+          if [ -d "$APP_PATH/Contents/Frameworks" ]; then
+            echo "Signing embedded frameworks..."
+            find "$APP_PATH/Contents/Frameworks" -name "*.framework" -o -name "*.dylib" | while read fw; do
+              echo "  Signing: $fw"
+              codesign --force --sign - --timestamp=none "$fw"
+            done
+          fi
+
+          echo "Signing main app bundle..."
+          codesign --force --sign - --timestamp=none "$APP_PATH"
+
+          echo "Verifying signature..."
+          codesign --verify --deep --verbose=2 "$APP_PATH"
 
       - name: Package App
         working-directory: CCGateWay
